@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import Breadcrumbs from "../../../shared/components/Breadcrumbs";
 import CrudActions from "../../../shared/components/CrudActions";
 import Footer from "../../../shared/components/Footer";
 import Menu from "../../../shared/components/Menu";
 import NewButton from "../../../shared/components/NewButton";
-import { listar } from "../../../shared/services/crudService";
+
+import { listar, remover } from "../../../shared/services/crudService";
 import { MAPPING_CONTROLLER_EMPRESA } from "../service/empresaService";
 
 export default function EmpresaPage() {
@@ -23,10 +25,23 @@ export default function EmpresaPage() {
     function editar(id) { }
 
     async function confirmarRemover(id) {
-        if (confirm("Deseja realmente excluir esta empresa?")) {
-            console.log(id);
+        if (!confirm("Deseja realmente excluir este empresa?")) {
+            return;
+        }
+
+        try {
+
+            await remover(MAPPING_CONTROLLER_EMPRESA, id);
+            await carregar();
+            toast.success("Empresa removido com sucesso!");
+
+        } catch (erro) {
+
+            console.error(erro);
+            toast.error("Erro ao tentar remover o Empresa.");
         }
     }
+
 
     return (
         <div>
