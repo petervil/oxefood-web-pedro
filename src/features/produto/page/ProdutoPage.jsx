@@ -5,7 +5,7 @@ import CrudActions from "../../../shared/components/CrudActions";
 import Footer from "../../../shared/components/Footer";
 import Menu from "../../../shared/components/Menu";
 import NewButton from "../../../shared/components/NewButton";
-import { listar, remover } from "../../../shared/services/crudService";
+import { buscarPorId, listar, remover } from "../../../shared/services/crudService";
 import { MAPPING_CONTROLLER_PRODUTO } from "../service/produtoService";
 
 export default function ProdutoPage() {
@@ -20,6 +20,17 @@ export default function ProdutoPage() {
         const data = await listar(MAPPING_CONTROLLER_PRODUTO);
         setLista(data);
     }
+
+    const [produto, setProduto] = useState({
+        id: null,
+        titulo: "",
+        codigo: "",
+        descricao: "",
+        valorUnitario: "",
+        tempoEntregaMinimo: "",
+        tempoEntregaMaximo: ""
+    });
+
 
     function editar(id) { }
 
@@ -41,6 +52,31 @@ export default function ProdutoPage() {
         }
     }
 
+    async function detalhar(id) {
+
+        try {
+
+            const data = await buscarPorId(
+                MAPPING_CONTROLLER_PRODUTO,
+                id
+            );
+
+            setProduto({
+                id: data.id,
+                titulo: data.titulo ?? "",
+                codigo: data.codigo ?? "",
+                descricao: data.descricao ?? "",
+                valorUnitario: data.valorUnitario ?? "",
+                tempoEntregaMinimo: data.tempoEntregaMinimo ?? "",
+                tempoEntregaMaximo: data.tempoEntregaMaximo ?? ""
+            });
+
+            document.getElementById('modal-detalhar').showModal()
+
+        } catch (erro) {
+            toast.error("Erro ao carregar produto.");
+        }
+    }
 
 
 
@@ -80,6 +116,7 @@ export default function ProdutoPage() {
                                         <td style={{ textAlign: 'center' }}>{produto.valorUnitario}</td>
                                         <td style={{ textAlign: 'center' }}>
                                             <CrudActions
+                                                onDetail={() => detalhar(produto.id)}
                                                 onEdit={() => editar(produto.id)}
                                                 onDelete={() => confirmarRemover(produto.id)}
                                             />
@@ -91,6 +128,36 @@ export default function ProdutoPage() {
                     </div>
                 </div>
             </div>
+            <dialog id="modal-detalhar" className="modal">
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg">Dados do Produto</h3>
+                    <div className="divider" />
+                    <p className="py-4">
+                        <strong>Título:</strong> {produto.titulo}
+                    </p>
+                    <p className="py-4">
+                        <strong>Código:</strong> {produto.codigo}
+                    </p>
+                    <p className="py-4">
+                        <strong>Descrição:</strong> {produto.descricao}
+                    </p>
+                    <p className="py-4">
+                        <strong>Valor Unitário:</strong> {produto.valorUnitario}
+                    </p>
+                    <p className="py-4">
+                        <strong>Tempo de Entrega Mínimo:</strong> {produto.tempoEntregaMinimo}
+                    </p>
+                    <p className="py-4">
+                        <strong>Tempo Entrega Máximo:</strong> {produto.tempoEntregaMaximo}
+                    </p>
+                    <div className="modal-action">
+                        <form method="dialog">
+                            {/* if there is a button in form, it will close the modal */}
+                            <button className="btn">Fechar</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
             <Footer />
         </div>
     );
