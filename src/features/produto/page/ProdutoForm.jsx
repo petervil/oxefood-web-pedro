@@ -1,16 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import { toast } from 'react-toastify';
 import BackButton from "../../../shared/components/BackButton";
 import Breadcrumbs from "../../../shared/components/Breadcrumbs";
 import Footer from "../../../shared/components/Footer";
 import Menu from "../../../shared/components/Menu";
 import SaveButton from "../../../shared/components/SaveButton";
-import { cadastrar } from "../../../shared/services/crudService";
+import { atualizar, buscarPorId, cadastrar } from "../../../shared/services/crudService";
 import { MAPPING_CONTROLLER_PRODUTO } from "../../produto/service/produtoService";
 
 export default function ProdutoForm() {
 
+    const { idProduto } = useParams();
+
+
     const [produto, setProduto] = useState({
+        id: null,
         codigo: "",
         titulo: "",
         descricao: "",
@@ -19,11 +25,45 @@ export default function ProdutoForm() {
         tempoEntregaMaximo: ""
     });
 
+    useEffect(() => {
+        if (idProduto) {
+            carregarProduto();
+        }
+    }, [idProduto]);
+
+    async function carregarProduto() {
+        try {
+            const data = await buscarPorId(
+                MAPPING_CONTROLLER_PRODUTO,
+                idProduto
+            );
+
+            setProduto({
+                id: data.id,
+                codigo: data.codigo ?? "",
+                titulo: data.titulo ?? "",
+                descricao: data.descricao ?? "",
+                valorUnitario: data.valorUnitario ?? "",
+                tempoEntregaMinimo: data.tempoEntregaMinimo ?? "",
+                tempoEntregaMaximo: data.tempoEntregaMaximo ?? "",
+
+            });
+
+        } catch (erro) {
+            toast.error("Erro ao carregar produto.");
+        }
+    }
+
     async function salvar() {
 
         try {
-            await cadastrar(MAPPING_CONTROLLER_PRODUTO, produto);
-            toast.success("Produto cadastrado com sucesso!");
+            if (idProduto) {
+                await atualizar(MAPPING_CONTROLLER_PRODUTO, produto);
+                toast.success("Produto alterado com sucesso!");
+            } else {
+                await cadastrar(MAPPING_CONTROLLER_PRODUTO, produto);
+                toast.success("Produto cadastrado com sucesso!");
+            }
         } catch (erro) {
             toast.error("Erro ao cadastrar produto.");
         }
@@ -43,9 +83,19 @@ export default function ProdutoForm() {
                 <div className="overflow-x-auto shadow-sm">
 
                     <div className="flex items-center justify-between mb-6" style={{ marginTop: '20px', marginLeft: '10px', marginRight: '10px' }}>
-
+                        {idProduto ?
+                            <Breadcrumbs items={[
+                                { label: "Produto" },
+                                { label: "Alterar" }
+                            ]} />
+                            :
+                            <Breadcrumbs items={[
+                                { label: "Produto" },
+                                { label: "Cadastrar" }
+                            ]} />
+                        }
                         <h1 className="text-3xl font-bold text-gray-800">
-                            Novo Produto
+                            {idProduto ? "Alterar Produto" : "Novo Produto"}
                         </h1>
 
                     </div>

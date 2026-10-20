@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Breadcrumbs from "../../../shared/components/Breadcrumbs";
 import CrudActions from "../../../shared/components/CrudActions";
@@ -6,16 +7,22 @@ import Footer from "../../../shared/components/Footer";
 import Menu from "../../../shared/components/Menu";
 import NewButton from "../../../shared/components/NewButton";
 
+
 import { buscarPorId, listar, remover } from "../../../shared/services/crudService";
 import { MAPPING_CONTROLLER_EMPRESA } from "../service/empresaService";
 
 export default function EmpresaPage() {
 
     const [lista, setLista] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         carregar();
     }, []);
+
+    function editar(id) {
+        navigate(`/empresa-form/${id}`);
+    }
 
     async function carregar() {
         const data = await listar(MAPPING_CONTROLLER_EMPRESA);
@@ -33,7 +40,9 @@ export default function EmpresaPage() {
     });
 
 
-    function editar(id) { }
+    function editar(id) {
+        navigate(`/empresa-form/${id}`);
+    }
 
     async function confirmarRemover(id) {
         if (!confirm("Deseja realmente excluir este empresa?")) {

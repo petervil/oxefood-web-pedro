@@ -12,6 +12,7 @@ import ProdutoPage from "../features/produto/page/ProdutoPage";
 
 
 
+
 export default function Router() {
 
     return (
@@ -24,10 +25,10 @@ export default function Router() {
                 <Route path="/cliente" element={<ClientePage />} />
                 <Route path="/produto" element={<ProdutoPage />} />
                 <Route path="/empresa" element={<EmpresaPage />} />
-                <Route path="/cliente-form" element={<ClienteForm />} />
-                <Route path="/empresa-form" element={<EmpresaForm />} />
-                <Route path="/produto-form" element={<ProdutoForm />} />
 
+                <Route path="/cliente-form/:idCliente?" element={<ClienteForm />} />
+                <Route path="/empresa-form/:idEmpresa?" element={<EmpresaForm />} />
+                <Route path="/produto-form/:idProduto?" element={<ProdutoForm />} />
 
 
             </Routes>

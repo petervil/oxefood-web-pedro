@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Breadcrumbs from "../../../shared/components/Breadcrumbs";
 import CrudActions from "../../../shared/components/CrudActions";
@@ -8,13 +9,20 @@ import NewButton from "../../../shared/components/NewButton";
 import { buscarPorId, listar, remover } from "../../../shared/services/crudService";
 import { MAPPING_CONTROLLER_PRODUTO } from "../service/produtoService";
 
+
 export default function ProdutoPage() {
 
     const [lista, setLista] = useState([]);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         carregar();
     }, []);
+
+    function editar(id) {
+        navigate(`/produto-form/${id}`);
+    }
 
     async function carregar() {
         const data = await listar(MAPPING_CONTROLLER_PRODUTO);
@@ -32,7 +40,9 @@ export default function ProdutoPage() {
     });
 
 
-    function editar(id) { }
+    function editar(id) {
+        navigate(`/produto-form/${id}`);
+    }
 
     async function confirmarRemover(id) {
         if (!confirm("Deseja realmente excluir este produto?")) {
